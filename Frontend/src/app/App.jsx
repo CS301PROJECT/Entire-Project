@@ -4,7 +4,7 @@ import { CitySkyline } from "./components/CitySkyline";
 import { ProgressBar } from "./components/ProgressBar";
 import {
   PROFESSIONS,
-  getScenariosForProfession,
+  getRandomScenariosForProfession,
 } from "./components/Professions/export_all";
 import LoginModal from "./components/LoginModal";
 
@@ -34,7 +34,6 @@ function StartScreen({ onNew, onLearn }) {
         overflow: "hidden",
       }}
     >
-      {/* Background decoration rings */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{ opacity: 0.06 }}
@@ -378,8 +377,7 @@ function ProfessionScreen({ onSelect }) {
 
 function CityScreen({ gameState, onNext }) {
   const prof = gameState.profession;
-  const scenarios = getScenariosForProfession(prof.id);
-  const remaining = scenarios.length - gameState.scenarioIndex;
+  const scenarios = gameState.scenarios;
 
   return (
     <div
@@ -544,7 +542,7 @@ function CityScreen({ gameState, onNext }) {
           </motion.div>
         )}
 
-        {remaining > 0 ? (
+        {gameState.scenarioIndex < scenarios.length ? (
           <button
             onClick={onNext}
             style={{
@@ -568,7 +566,7 @@ function CityScreen({ gameState, onNext }) {
               (e.currentTarget.style.transform = "translateY(0)")
             }
           >
-            Next Scenario ({remaining} remaining) →
+            Next Scenario →
           </button>
         ) : (
           <button
@@ -596,8 +594,7 @@ function CityScreen({ gameState, onNext }) {
 }
 
 function DecisionScreen({ gameState, onChoice }) {
-  const prof = gameState.profession;
-  const scenarios = getScenariosForProfession(prof.id);
+  const scenarios = gameState.scenarios;
   const scenario = scenarios[gameState.scenarioIndex];
   const [hovered, setHovered] = useState(null);
 
@@ -812,7 +809,6 @@ function ConsequenceScreen({ gameState, onContinue }) {
       className="min-h-screen flex flex-col"
       style={{ background: bgGrad, fontFamily: "Nunito, sans-serif" }}
     >
-      {/* Split city visual */}
       <div
         style={{
           display: "grid",
@@ -914,7 +910,6 @@ function ConsequenceScreen({ gameState, onContinue }) {
           )}
         </div>
 
-        {/* Center pin */}
         <div
           style={{
             position: "absolute",
@@ -1120,7 +1115,7 @@ function ConsequenceScreen({ gameState, onContinue }) {
 function EndScreen({ gameState, onPlayAgain }) {
   const prof = gameState.profession;
   const { compliance, money } = gameState;
-  const scenarios = getScenariosForProfession(prof.id);
+  const scenarios = gameState.scenarios;
 
   const grade =
     compliance >= 80
@@ -1357,6 +1352,7 @@ export default function App() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(true);
   const [gameState, setGameState] = useState({
     profession: null,
+    scenarios: [],
     compliance: 50,
     money: 0,
     scenarioIndex: 0,
@@ -1366,13 +1362,13 @@ export default function App() {
   const handleLogin = (userData) => {
     console.log("Login attempted with:", userData);
     setIsLoginModalOpen(false);
-    // You can add actual authentication logic here
-    // For now, just close the modal and stay on start screen
   };
 
   const handleProfessionSelect = (prof) => {
+    const chosenScenarios = getRandomScenariosForProfession(prof.id, 5);
     setGameState({
       profession: prof,
+      scenarios: chosenScenarios,
       compliance: 50,
       money: prof.startingMoney,
       scenarioIndex: 0,
@@ -1382,7 +1378,7 @@ export default function App() {
   };
 
   const handleCityNext = () => {
-    const scenarios = getScenariosForProfession(gameState.profession?.id);
+    const scenarios = gameState.scenarios;
     if (gameState.scenarioIndex >= scenarios.length) {
       setScreen("end");
     } else {
@@ -1406,14 +1402,12 @@ export default function App() {
 
   return (
     <div style={{ fontFamily: "Nunito, sans-serif", minHeight: "100vh" }}>
-      {/* Login Modal */}
       <LoginModal
         isOpen={isLoginModalOpen}
         onLogin={handleLogin}
         onClose={() => setIsLoginModalOpen(false)}
       />
 
-      {/* Main Game Content */}
       <AnimatePresence mode="wait">
         {screen === "start" && (
           <motion.div
@@ -1489,6 +1483,7 @@ export default function App() {
               onPlayAgain={() => {
                 setGameState({
                   profession: null,
+                  scenarios: [],
                   compliance: 50,
                   money: 0,
                   scenarioIndex: 0,
