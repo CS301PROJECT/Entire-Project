@@ -16,16 +16,18 @@ export default function LoginModal({ isOpen, onLogin, onSignUp, onClose }) {
     password: "",
     fullName: "",
   });
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   if (!isOpen) return null;
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
 
-    const submitButton = e.target.querySelector('button[type="submit"]');
-    const originalText = submitButton.textContent;
-    submitButton.textContent = "Logging in...";
-    submitButton.disabled = true;
+    setSuccessMessage("");
+    setErrorMessage("");
+    setIsLoading(true);
 
     try {
       const response = await fetch("http://localhost:5000/api/auth/login", {
@@ -47,28 +49,35 @@ export default function LoginModal({ isOpen, onLogin, onSignUp, onClose }) {
         localStorage.setItem("user", JSON.stringify(data.user));
         onLogin(data.user);
       } else {
-        // Show the specific error message from backend
-        alert(data.message || "Login failed");
+        setErrorMessage(data.message || "Login failed");
       }
     } catch (error) {
       console.error("Login error:", error);
-      alert(
+      setErrorMessage(
         "Error connecting to server. Make sure backend is running on port 5000",
       );
     } finally {
-      submitButton.textContent = originalText;
-      submitButton.disabled = false;
+      setIsLoading(false);
     }
   };
 
   const handleSignUpSubmit = async (e) => {
     e.preventDefault();
-    const submitButton = e.target.querySelector('button[type="submit"]');
-    const originalText = submitButton.textContent;
-    submitButton.textContent = "Creating Account...";
-    submitButton.disabled = true;
+
+    setSuccessMessage("");
+    setErrorMessage("");
+    setIsLoading(true);
 
     try {
+      console.log(
+        "📤 Sending signup request to:",
+        "http://localhost:5000/api/auth/signup",
+      );
+      console.log("📦 Data:", {
+        fullName: formData.fullName,
+        email: formData.email,
+      });
+
       const response = await fetch("http://localhost:5000/api/auth/signup", {
         method: "POST",
         headers: {
@@ -81,26 +90,57 @@ export default function LoginModal({ isOpen, onLogin, onSignUp, onClose }) {
         }),
       });
 
-      const data = await response.json();
+      console.log("📥 Response status:", response.status);
+      console.log("📥 Response headers:", response.headers);
+
+      let data;
+      try {
+        data = await response.json();
+        console.log("📥 Response data:", data);
+      } catch (parseError) {
+        console.error("❌ Failed to parse JSON:", parseError);
+        const text = await response.text();
+        console.log("📥 Raw response:", text);
+        setErrorMessage("Invalid response from server");
+        setIsLoading(false);
+        return;
+      }
 
       if (response.ok) {
         console.log("✅ Registration successful:", data.user);
-        // Store user data in localStorage
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-        // Call the onSignUp prop
-        onSignUp(data.user);
+
+        setSuccessMessage(
+          `✅ Welcome, ${data.user.fullName}! Account created successfully.`,
+        );
+
+        // Reset form
+        setFormData({
+          email: "",
+          password: "",
+          fullName: "",
+        });
+
+        // Switch back to login mode after 2 seconds
+        setTimeout(() => {
+          setIsSignUpMode(false);
+          setSuccessMessage("");
+          if (onSignUp) {
+            onSignUp(data.user);
+          }
+        }, 2000);
       } else {
-        alert(data.message || "Registration failed");
+        setErrorMessage(data.message || "Registration failed");
       }
     } catch (error) {
-      console.error("Registration error:", error);
-      alert(
+      console.error("❌ Registration error:", error);
+      console.error("❌ Error details:", error.message);
+      setErrorMessage(
         "Error connecting to server. Make sure backend is running on port 5000",
       );
     } finally {
-      submitButton.textContent = originalText;
-      submitButton.disabled = false;
+      setIsLoading(false);
     }
   };
 
@@ -111,6 +151,8 @@ export default function LoginModal({ isOpen, onLogin, onSignUp, onClose }) {
 
   const switchToLogin = () => {
     setIsSignUpMode(false);
+    setSuccessMessage("");
+    setErrorMessage("");
     setFormData({
       email: "",
       password: "",
@@ -120,6 +162,8 @@ export default function LoginModal({ isOpen, onLogin, onSignUp, onClose }) {
 
   const switchToSignUp = () => {
     setIsSignUpMode(true);
+    setSuccessMessage("");
+    setErrorMessage("");
     setFormData({
       email: "",
       password: "",
@@ -256,6 +300,7 @@ export default function LoginModal({ isOpen, onLogin, onSignUp, onClose }) {
             ...GLASS_DARK,
             borderRadius: "20px 20px 0 0",
             padding: "28px 28px 36px",
+            position: "relative",
           }}
         >
           {/* Close button */}
@@ -280,6 +325,64 @@ export default function LoginModal({ isOpen, onLogin, onSignUp, onClose }) {
           >
             ✕
           </button>
+
+          {/* Success Message */}
+          {successMessage && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              style={{
+                background: "rgba(94,175,110,0.15)",
+                border: "1px solid rgba(94,175,110,0.4)",
+                borderRadius: "10px",
+                padding: "12px 16px",
+                marginBottom: "16px",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+              }}
+            >
+              <span style={{ fontSize: "1.2rem" }}>✅</span>
+              <span
+                style={{
+                  color: "#5EAF6E",
+                  fontWeight: 600,
+                  fontSize: "0.9rem",
+                }}
+              >
+                {successMessage}
+              </span>
+            </motion.div>
+          )}
+
+          {/* Error Message */}
+          {errorMessage && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              style={{
+                background: "rgba(212,24,61,0.15)",
+                border: "1px solid rgba(212,24,61,0.4)",
+                borderRadius: "10px",
+                padding: "12px 16px",
+                marginBottom: "16px",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+              }}
+            >
+              <span style={{ fontSize: "1.2rem" }}>❌</span>
+              <span
+                style={{
+                  color: "#D4183D",
+                  fontWeight: 600,
+                  fontSize: "0.9rem",
+                }}
+              >
+                {errorMessage}
+              </span>
+            </motion.div>
+          )}
 
           {/* Login Mode */}
           {!isSignUpMode ? (
@@ -308,6 +411,7 @@ export default function LoginModal({ isOpen, onLogin, onSignUp, onClose }) {
               <form
                 onSubmit={handleLoginSubmit}
                 className="flex flex-col gap-3"
+                autoComplete="off"
               >
                 <div>
                   <label
@@ -329,6 +433,7 @@ export default function LoginModal({ isOpen, onLogin, onSignUp, onClose }) {
                     onChange={handleChange}
                     placeholder="example@gmail.com"
                     required
+                    autoComplete="off"
                     style={{
                       width: "100%",
                       padding: "12px 14px",
@@ -363,6 +468,7 @@ export default function LoginModal({ isOpen, onLogin, onSignUp, onClose }) {
                     onChange={handleChange}
                     placeholder="••••••••"
                     required
+                    autoComplete="new-password"
                     style={{
                       width: "100%",
                       padding: "12px 14px",
@@ -380,6 +486,7 @@ export default function LoginModal({ isOpen, onLogin, onSignUp, onClose }) {
 
                 <button
                   type="submit"
+                  disabled={isLoading}
                   style={{
                     marginTop: "8px",
                     padding: "14px",
@@ -389,17 +496,20 @@ export default function LoginModal({ isOpen, onLogin, onSignUp, onClose }) {
                     color: "#1A1A2E",
                     fontWeight: 800,
                     fontSize: "1rem",
-                    cursor: "pointer",
+                    cursor: isLoading ? "not-allowed" : "pointer",
                     fontFamily: "Nunito, sans-serif",
                     letterSpacing: "0.02em",
                     transition: "transform 0.15s, box-shadow 0.15s",
                     boxShadow: "0 4px 20px rgba(201,168,112,0.35)",
                     width: "100%",
+                    opacity: isLoading ? 0.7 : 1,
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "translateY(-2px)";
-                    e.currentTarget.style.boxShadow =
-                      "0 8px 28px rgba(201,168,112,0.5)";
+                    if (!isLoading) {
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.boxShadow =
+                        "0 8px 28px rgba(201,168,112,0.5)";
+                    }
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = "translateY(0)";
@@ -407,7 +517,7 @@ export default function LoginModal({ isOpen, onLogin, onSignUp, onClose }) {
                       "0 4px 20px rgba(201,168,112,0.35)";
                   }}
                 >
-                  Start Playing →
+                  {isLoading ? "Logging in..." : "Start Playing →"}
                 </button>
 
                 <p
@@ -463,6 +573,7 @@ export default function LoginModal({ isOpen, onLogin, onSignUp, onClose }) {
               <form
                 onSubmit={handleSignUpSubmit}
                 className="flex flex-col gap-3"
+                autoComplete="off"
               >
                 <div>
                   <label
@@ -484,6 +595,7 @@ export default function LoginModal({ isOpen, onLogin, onSignUp, onClose }) {
                     onChange={handleChange}
                     placeholder="e.g. Mwila Banda"
                     required
+                    autoComplete="off"
                     style={{
                       width: "100%",
                       padding: "12px 14px",
@@ -553,6 +665,7 @@ export default function LoginModal({ isOpen, onLogin, onSignUp, onClose }) {
                     onChange={handleChange}
                     placeholder="••••••••"
                     required
+                    autoComplete="new-password"
                     style={{
                       width: "100%",
                       padding: "12px 14px",
@@ -570,6 +683,7 @@ export default function LoginModal({ isOpen, onLogin, onSignUp, onClose }) {
 
                 <button
                   type="submit"
+                  disabled={isLoading}
                   style={{
                     marginTop: "8px",
                     padding: "14px",
@@ -579,17 +693,20 @@ export default function LoginModal({ isOpen, onLogin, onSignUp, onClose }) {
                     color: "#1A1A2E",
                     fontWeight: 800,
                     fontSize: "1rem",
-                    cursor: "pointer",
+                    cursor: isLoading ? "not-allowed" : "pointer",
                     fontFamily: "Nunito, sans-serif",
                     letterSpacing: "0.02em",
                     transition: "transform 0.15s, box-shadow 0.15s",
                     boxShadow: "0 4px 20px rgba(201,168,112,0.35)",
                     width: "100%",
+                    opacity: isLoading ? 0.7 : 1,
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "translateY(-2px)";
-                    e.currentTarget.style.boxShadow =
-                      "0 8px 28px rgba(201,168,112,0.5)";
+                    if (!isLoading) {
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.boxShadow =
+                        "0 8px 28px rgba(201,168,112,0.5)";
+                    }
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = "translateY(0)";
@@ -597,7 +714,7 @@ export default function LoginModal({ isOpen, onLogin, onSignUp, onClose }) {
                       "0 4px 20px rgba(201,168,112,0.35)";
                   }}
                 >
-                  Create Account →
+                  {isLoading ? "Creating Account..." : "Create Account →"}
                 </button>
 
                 <p
