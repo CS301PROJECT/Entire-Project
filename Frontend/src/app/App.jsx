@@ -2871,10 +2871,8 @@ export default function App() {
   const handleLogin = (userData) => {
     console.log("Login attempted with:", userData);
     setIsLoginModalOpen(false);
-  };
-  const handleSignUp = (userData) => {
-    console.log("Sign up successful:", userData);
-    setIsLoginModalOpen(false);
+    // You can add actual authentication logic here
+    // For now, just close the modal and stay on start screen
   };
 
   const handleProfessionSelect = (prof) => {

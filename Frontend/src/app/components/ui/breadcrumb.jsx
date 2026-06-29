@@ -1,4 +1,4 @@
-import * from "react";
+import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { ChevronRight, MoreHorizontal } from "lucide-react";
 
@@ -31,13 +31,7 @@ function BreadcrumbItem({ className, ...props }) {
   );
 }
 
-function BreadcrumbLink({
-  asChild,
-  className,
-  ...props
-} & {
-  asChild?;
-}) {
+function BreadcrumbLink({ asChild, className, ...props }) {
   const Comp = asChild ? Slot : "a";
 
   return (
@@ -62,11 +56,7 @@ function BreadcrumbPage({ className, ...props }) {
   );
 }
 
-function BreadcrumbSeparator({
-  children,
-  className,
-  ...props
-}) {
+function BreadcrumbSeparator({ children, className, ...props }) {
   return (
     <li
       data-slot="breadcrumb-separator"
@@ -80,10 +70,7 @@ function BreadcrumbSeparator({
   );
 }
 
-function BreadcrumbEllipsis({
-  className,
-  ...props
-}) {
+function BreadcrumbEllipsis({ className, ...props }) {
   return (
     <span
       data-slot="breadcrumb-ellipsis"
