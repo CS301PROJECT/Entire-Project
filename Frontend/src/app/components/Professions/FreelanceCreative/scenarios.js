@@ -703,13 +703,13 @@ export const CREATIVE_SCENARIOS = [
   },
   {
     id: "freelance_s19",
-    title: "WHT Certificate Not Received",
+    title: "Withholding Tax (WHT) Certificate Not Received",
     situation:
-      "You worked for a large company 6 months ago. They deducted WHT but haven't provided a certificate.",
+      "You worked for a large company 6 months ago. They deducted the withholding tax(WHT) but haven't provided a certificate.",
     icon: "📄",
     choices: [
       {
-        text: "Follow up with the client for the WHT certificate",
+        text: "Follow up with the client for the withholding tax certificate",
         subtext: "Chase the paperwork",
         outcome: "good",
         consequenceTitle: "Certificate Obtained",
@@ -729,12 +729,12 @@ export const CREATIVE_SCENARIOS = [
         moneyChange: 0,
       },
       {
-        text: "Claim the WHT credit without the certificate",
+        text: "Claim the withholding tax credit without the certificate",
         subtext: "File anyway",
         outcome: "bad",
         consequenceTitle: "Double Taxation",
         consequenceDesc:
-          "Without a certificate, the WHT credit cannot be claimed, meaning you may end up paying tax twice on the same income.",
+          "Without a certificate, the withholding tax credit cannot be claimed, meaning you may end up paying tax twice on the same income.",
         scoreChange: -10,
         moneyChange: -1500,
       },
@@ -742,7 +742,7 @@ export const CREATIVE_SCENARIOS = [
   },
   {
     id: "freelance_s20",
-    title: "Foreign Client — No WHT",
+    title: "Foreign Client — No Withholding Tax (WHT)",
     situation:
       "A foreign client pays you K20,000 for design work. No WHT is deducted.",
     icon: "✈️",
@@ -781,7 +781,7 @@ export const CREATIVE_SCENARIOS = [
   },
   {
     id: "freelance_s21",
-    title: "Multiple WHT Certificates",
+    title: "Multiple Withholding Tax (WHT) Certificates",
     situation:
       "You've received WHT certificates from 5 different clients this year. You haven't filed any returns.",
     icon: "🗂️",
@@ -820,7 +820,7 @@ export const CREATIVE_SCENARIOS = [
   },
   {
     id: "freelance_s22",
-    title: "WHT Rate Confusion",
+    title: "Withholding Tax (WHT) Rate Confusion",
     situation:
       "A client deducted 20% WHT instead of 15% on your consultancy fees.",
     icon: "🔢",
@@ -859,7 +859,7 @@ export const CREATIVE_SCENARIOS = [
   },
   {
     id: "freelance_s23",
-    title: "Services to Multiple Clients",
+    title: "Withholding Tax (WHT) on Multiple Clients",
     situation:
       "You provide both design (consultancy) and digital product sales to clients.",
     icon: "🎨",
@@ -898,7 +898,7 @@ export const CREATIVE_SCENARIOS = [
   },
   {
     id: "freelance_s24",
-    title: "WHT on Subcontractors",
+    title: "Withholding Tax (WHT) on Subcontractors",
     situation:
       "You subcontracted part of a design project to another freelancer for K5,000.",
     icon: "🧑‍💻",
