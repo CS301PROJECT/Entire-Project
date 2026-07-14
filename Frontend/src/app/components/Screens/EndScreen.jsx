@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import { CitySkyline } from "../CitySkyline";
 import { ProgressBar } from "../ProgressBar";
+import { getRandomFact } from "../tax_facts"; // Updated import name
 
 const GLASS = {
   background: "rgba(255,255,255,0.10)",
@@ -20,6 +21,9 @@ export default function EndScreen({ gameState, onPlayAgain }) {
   const prof = gameState.profession;
   const { compliance, money } = gameState;
   const scenarios = gameState.scenarios;
+
+  // Get a random fact when the component renders
+  const randomFact = getRandomFact();
 
   const grade =
     compliance >= 80
@@ -171,11 +175,12 @@ export default function EndScreen({ gameState, onPlayAgain }) {
               : compliance >= 60
                 ? "Good work Consistent compliance is what drives national development and community services."
                 : compliance >= 40
-                  ? "Mixed results. Each shortcut costs more in the long run. "
+                  ? "Mixed results. Each shortcut costs more in the long run."
                   : "This path leads to audits and penalties. Tax revenue funds schools, clinics, and roads — every kwacha matters."}
           </div>
         </div>
 
+        {/* Updated Did You Know? Section with Random Facts */}
         <div
           style={{
             background: "rgba(201,168,112,0.12)",
@@ -202,9 +207,18 @@ export default function EndScreen({ gameState, onPlayAgain }) {
               lineHeight: 1.5,
             }}
           >
-            an estimated amount collected was K82.6 billion in 2023, funding
-            education, healthcare, and infrastructure across all provinces.
-            Every kwacha declared matters.
+            {randomFact.fact}
+            {randomFact.source && (
+              <span style={{ 
+                display: "block", 
+                marginTop: "6px", 
+                fontSize: "0.65rem", 
+                color: "#7A8EA0",
+                fontStyle: "italic" 
+              }}>
+                Source: {randomFact.source}
+              </span>
+            )}
           </div>
         </div>
 

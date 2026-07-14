@@ -115,7 +115,7 @@ export default function CityScreen({ gameState, onNext, onExit }) {
           gap: "12px",
         }}
       >
-        <div style={{ ...GLASS, borderRadius: "14px", padding: "18px" }}>
+        {/* <div style={{ ...GLASS, borderRadius: "14px", padding: "18px" }}>
           <div className="flex flex-col gap-3">
             <ProgressBar
               value={gameState.compliance}
@@ -129,14 +129,29 @@ export default function CityScreen({ gameState, onNext, onExit }) {
                     : "#D4183D"
               }
             />
-            <ProgressBar
+            {/* <ProgressBar
               value={gameState.scenarioIndex}
               max={scenarios.length}
               label="Scenarios Completed"
               color="#C9A870"
-            />
+            /> 
           </div>
-        </div>
+        </div> */}
+
+      <div style={{ ...GLASS, borderRadius: "14px", padding: "18px" }}>
+        <ProgressBar
+          value={gameState.compliance}
+          max={100}
+          label="Compliance Rating"
+          color={
+            gameState.compliance >= 60
+              ? "#5EAF6E"
+              : gameState.compliance >= 30
+                ? "#E8834A"
+                : "#D4183D"
+          }
+        />
+      </div>
 
         {gameState.lastChoice && (
           <motion.div
@@ -185,52 +200,52 @@ export default function CityScreen({ gameState, onNext, onExit }) {
           </motion.div>
         )}
 
-        {gameState.scenarioIndex < scenarios.length ? (
-          <button
-            onClick={onNext}
-            style={{
-              padding: "16px",
-              background: "linear-gradient(135deg, #C9A870, #E8C878)",
-              border: "none",
-              borderRadius: "14px",
-              color: "#1A1A2E",
-              fontWeight: 800,
-              fontSize: "1rem",
-              cursor: "pointer",
-              fontFamily: "Nunito, sans-serif",
-              boxShadow: "0 4px 20px rgba(201,168,112,0.35)",
-              transition: "transform 0.15s",
-              width: "100%",
-            }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.transform = "translateY(-2px)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.transform = "translateY(0)")
-            }
-          >
-            Next Scenario ({remaining} remaining) →
-          </button>
+      {gameState.scenarioIndex < scenarios.length ? (
+        <button
+          onClick={onNext}
+          style={{
+            padding: "16px",
+            background: "linear-gradient(135deg, #C9A870, #E8C878)",
+            border: "none",
+            borderRadius: "14px",
+            color: "#1A1A2E",
+            fontWeight: 800,
+            fontSize: "1rem",
+            cursor: "pointer",
+            fontFamily: "Nunito, sans-serif",
+            boxShadow: "0 4px 20px rgba(201,168,112,0.35)",
+            transition: "transform 0.15s",
+            width: "100%",
+          }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.transform = "translateY(-2px)")
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.transform = "translateY(0)")
+          }
+        >
+          Next Scenario →
+        </button>
         ) : (
-          <button
-            onClick={onNext}
-            style={{
-              padding: "16px",
-              background: "linear-gradient(135deg, #5EAF6E, #45956e)",
-              border: "none",
-              borderRadius: "14px",
-              color: "white",
-              fontWeight: 800,
-              fontSize: "1rem",
-              cursor: "pointer",
-              fontFamily: "Nunito, sans-serif",
-              boxShadow: "0 4px 20px rgba(94,175,110,0.35)",
-              width: "100%",
-            }}
-          >
-            🏆 View Final Results →
-          </button>
-        )}
+        <button
+          onClick={onNext}
+          style={{
+            padding: "16px",
+            background: "linear-gradient(135deg, #5EAF6E, #45956e)",
+            border: "none",
+            borderRadius: "14px",
+            color: "white",
+            fontWeight: 800,
+            fontSize: "1rem",
+            cursor: "pointer",
+            fontFamily: "Nunito, sans-serif",
+            boxShadow: "0 4px 20px rgba(94,175,110,0.35)",
+            width: "100%",
+          }}
+        >
+          🏆 View Final Results →
+        </button>
+    )}
       </div>
     </div>
   );

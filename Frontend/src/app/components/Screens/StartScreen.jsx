@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import { PROFESSIONS } from "../Professions/export_all";
 
 const GLASS = {
   background: "rgba(255,255,255,0.10)",
@@ -105,11 +106,20 @@ export default function StartScreen({ onNew, onLearn }) {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="flex gap-4 mb-10"
         >
-          {[
-            { value: "4", label: "Scenarios" },
-            { value: "3", label: "Professions" },
-            { value: "K", label: "Kwacha" },
-          ].map(({ value, label }) => (
+        {[
+          {
+            value: PROFESSIONS.reduce((total, p) => total + p.scenarios.length, 0),
+            label: "Scenarios"
+          },
+          {
+            value: PROFESSIONS.length,
+            label: "Professions"
+          },
+          {
+            value: "K",
+            label: "Kwacha"
+          },
+        ].map(({ value, label }) => (
             <div
               key={label}
               style={{
