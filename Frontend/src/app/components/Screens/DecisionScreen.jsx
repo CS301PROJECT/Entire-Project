@@ -14,17 +14,10 @@ export default function DecisionScreen({ gameState, onChoice, onExit }) {
   const scenario = scenarios[gameState.scenarioIndex];
   const [hovered, setHovered] = useState(null);
 
-  const outcomeColor = (outcome) => {
-    if (outcome === "good") return "#5EAF6E";
-    if (outcome === "neutral") return "#E8834A";
-    return "#D4183D";
-  };
-
-  const outcomeLabel = (outcome) => {
-    if (outcome === "good") return "✓ Compliant";
-    if (outcome === "neutral") return "⚡ Risky";
-    return "✗ Evasion";
-  };
+  // Shuffle choices once when the scenario loads so the best answer isn't always first
+  const [shuffledChoices] = useState(() =>
+    [...scenario.choices].sort(() => Math.random() - 0.5)
+  );
 
   return (
     <div
@@ -44,6 +37,10 @@ export default function DecisionScreen({ gameState, onChoice, onExit }) {
           justifyContent: "space-between",
         }}
       >
+        {/* Exit button on the left */}
+        <ExitButton onClick={onExit} />
+
+        {/* Scenario counter in the middle — no total revealed */}
         <div
           style={{
             color: "#C9A870",
@@ -52,9 +49,10 @@ export default function DecisionScreen({ gameState, onChoice, onExit }) {
             letterSpacing: "0.08em",
           }}
         >
-          SCENARIO {gameState.scenarioIndex + 1} OF {scenarios.length}
+          SCENARIO {gameState.scenarioIndex + 1}
         </div>
-        <ExitButton onClick={onExit} />
+
+        {/* Wallet and compliance on the right */}
         <div className="flex gap-4">
           <span style={{ color: "#5EAF6E", fontWeight: 700 }}>
             K{gameState.money.toLocaleString()}
@@ -130,7 +128,7 @@ export default function DecisionScreen({ gameState, onChoice, onExit }) {
         </div>
 
         <div className="flex flex-col gap-3">
-          {scenario.choices.map((choice, i) => (
+          {shuffledChoices.map((choice, i) => (
             <motion.button
               key={i}
               initial={{ opacity: 0, x: -10 }}
@@ -142,17 +140,9 @@ export default function DecisionScreen({ gameState, onChoice, onExit }) {
               style={{
                 background:
                   hovered === i
-                    ? choice.outcome === "good"
-                      ? "rgba(94,175,110,0.22)"
-                      : choice.outcome === "neutral"
-                        ? "rgba(232,131,74,0.22)"
-                        : "rgba(212,24,61,0.18)"
-                    : choice.outcome === "good"
-                      ? "rgba(94,175,110,0.10)"
-                      : choice.outcome === "neutral"
-                        ? "rgba(232,131,74,0.10)"
-                        : "rgba(212,24,61,0.08)",
-                border: `2px solid ${outcomeColor(choice.outcome)}${hovered === i ? "88" : "44"}`,
+                    ? "rgba(255,255,255,0.12)"
+                    : "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(255,255,255,0.15)",
                 borderRadius: "14px",
                 padding: "16px 18px",
                 cursor: "pointer",
@@ -162,44 +152,28 @@ export default function DecisionScreen({ gameState, onChoice, onExit }) {
                 width: "100%",
               }}
             >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <div
-                    style={{
-                      color: "#F5F7FA",
-                      fontWeight: 700,
-                      fontSize: "0.95rem",
-                      marginBottom: "4px",
-                    }}
-                  >
-                    {choice.text}
-                  </div>
-                  {choice.subtext && (
-                    <div
-                      style={{
-                        color: "#B8C4CF",
-                        fontSize: "0.8rem",
-                        fontFamily: "Inter, sans-serif",
-                      }}
-                    >
-                      {choice.subtext}
-                    </div>
-                  )}
-                </div>
+              <div>
                 <div
                   style={{
-                    color: outcomeColor(choice.outcome),
-                    fontSize: "0.68rem",
+                    color: "#F5F7FA",
                     fontWeight: 700,
-                    border: `1px solid ${outcomeColor(choice.outcome)}55`,
-                    borderRadius: "6px",
-                    padding: "3px 8px",
-                    flexShrink: 0,
-                    whiteSpace: "nowrap",
+                    fontSize: "0.95rem",
+                    marginBottom: "4px",
                   }}
                 >
-                  {outcomeLabel(choice.outcome)}
+                  {choice.text}
                 </div>
+                {choice.subtext && (
+                  <div
+                    style={{
+                      color: "#B8C4CF",
+                      fontSize: "0.8rem",
+                      fontFamily: "Inter, sans-serif",
+                    }}
+                  >
+                    {choice.subtext}
+                  </div>
+                )}
               </div>
             </motion.button>
           ))}

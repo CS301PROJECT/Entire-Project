@@ -1,7 +1,8 @@
+
 import { useState } from "react";
 import { motion } from "motion/react";
 import { PROFESSIONS } from "../Professions/export_all";
-
+ 
 const GLASS = {
   background: "rgba(255,255,255,0.10)",
   backdropFilter: "blur(16px)",
