@@ -31,53 +31,51 @@ export default function CityScreen({ gameState, onNext, onExit }) {
         position: "relative",
       }}
     >
-      <div
-        style={{
-          ...GLASS_DARK,
-          padding: "14px 20px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <div>
-          <div
-            style={{
-              color: "#C9A870",
-              fontSize: "0.72rem",
-              fontWeight: 700,
-              letterSpacing: "0.08em",
-            }}
-          >
-            {prof.emoji} {prof.name.toUpperCase()}
-          </div>
-          <div style={{ color: "#F5F7FA", fontWeight: 800, fontSize: "1rem" }}>
-            Your City
-          </div>
+    <div
+      style={{
+        ...GLASS_DARK,
+        padding: "14px 20px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+      }}
+    >
+    {/* Left: Exit button + profession info */}
+    <div className="flex items-center gap-3">
+      <ExitButton onClick={onExit} />
+      <div>
+        <div
+          style={{
+            color: "#C9A870",
+            fontSize: "0.72rem",
+            fontWeight: 700,
+            letterSpacing: "0.08em",
+          }}
+        >
+          {prof.emoji} {prof.name.toUpperCase()}
         </div>
-        <ExitButton onClick={onExit} />
-        <div className="flex gap-4">
-          <div style={{ textAlign: "right" }}>
-            <div style={{ color: "#7A8EA0", fontSize: "0.68rem" }}>WALLET</div>
-            <div
-              style={{ color: "#5EAF6E", fontWeight: 800, fontSize: "1rem" }}
-            >
-              K{gameState.money.toLocaleString()}
-            </div>
-          </div>
-          <div style={{ textAlign: "right" }}>
-            <div style={{ color: "#7A8EA0", fontSize: "0.68rem" }}>
-              COMPLIANCE
-            </div>
-            <div
-              style={{ color: "#C9A870", fontWeight: 800, fontSize: "1rem" }}
-            >
-              {gameState.compliance}%
-            </div>
-          </div>
+        <div style={{ color: "#F5F7FA", fontWeight: 800, fontSize: "1rem" }}>
+          Your City
         </div>
       </div>
+    </div>
 
+  {/* Right: Wallet and compliance */}
+  <div className="flex gap-2">
+    <div style={{ textAlign: "right" }}>
+      <div style={{ color: "#7A8EA0", fontSize: "0.68rem" }}>WALLET</div>
+      <div style={{ color: "#5EAF6E", fontWeight: 800, fontSize: "1rem" }}>
+        {gameState.money.toLocaleString()}
+      </div>
+    </div>
+    <div style={{ textAlign: "right" }}>
+      <div style={{ color: "#7A8EA0", fontSize: "0.68rem" }}>COMPLIANCE</div>
+      <div style={{ color: "#C9A870", fontWeight: 800, fontSize: "1rem" }}>
+        {gameState.compliance}%
+      </div>
+    </div>
+  </div>
+</div>
       <div style={{ position: "relative" }}>
         <CitySkyline compliance={gameState.compliance} />
         <div
